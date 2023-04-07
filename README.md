@@ -1,4 +1,4 @@
-# Kanap #
+# EasyShop #
 
 This is the front end and back end server for Project 4 of the Web Developer path.
 
