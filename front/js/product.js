@@ -54,7 +54,7 @@ function product_JSONtoHTMLElement(productJSON) {
   return toHTMLElement(html);
 }
 
-class CartItem {
+class Item {
   // get the id from the URLSearchParams
   get id() {
     return getURLSearchParam("id", window.location.href);
@@ -89,7 +89,7 @@ class CartItem {
 
 // get new cart & item
 const cart = new Cart();
-const item = new CartItem();
+const item = new Item();
 
 /********************************************/
 /***** insert product into the DOM *****/
@@ -104,42 +104,50 @@ const product = await fetchProductById(id);
 // create product HTMLElement from JSON product
 const product_HTMLElement = product_JSONtoHTMLElement(product);
 
+// set document title to product.name
+document.title = product.name;
+
 // get product_parentHTMLElement
 const product_parentHTMLElement = document.querySelector(".item");
 // insert product_HTMLElement into product_parentHTMLElement
 product_parentHTMLElement.appendChild(product_HTMLElement);
 
-function isEqualCartItem(cartItem) {
-  return cartItem.id === item.id && cartItem.color === item.color;
-}
-
 /*******************************/
 /***** #addToCart listener *****/
 /*******************************/
+function isSameItem(item1, item2) {
+  return (item1.id === item2.id) && (item1.color === item2.color);
+}
+
 function addToCart() {
-  // do NOT update if quantity or color are falsy
-  if (!item.quantity || !item.color) {
+  let jsonItem = item.JSON;
+
+  // do nothing if quantity or color are falsy
+  if (!jsonItem.quantity || !jsonItem.color) {
     return;
   }
 
-  // get cart.JSON
-  let cartJSON = cart.JSON;
+  // get cart.items
+  let items = cart.items;
+  let hasSameItem = false;
 
-  // find equal item from cart
-  if (cartJSON.find(isEqualCartItem)) {
-    // cart has item, update quantity w/ item.quantity
-    cartJSON = cartJSON.map((cartItem) => {
-      if (isEqualCartItem(cartItem)) {
-        cartItem.quantity += item.quantity;
-      }
-      return cartItem;
-    });
-  } else {
-    // add item JSON to cart
-    cartJSON.push(item.JSON);
+  // loop through items until same item
+  items.forEach((currentItem, index, thisArray) => {
+    hasSameItem = isSameItem(currentItem, jsonItem);
+    // update quantity if is same item
+    if (hasSameItem) {
+      currentItem.quantity += jsonItem.quantity;
+      thisArray[index] = currentItem;
+      return;
+    }
+  });
+
+  if (!hasSameItem) {
+    // same item not in cart, insert it
+    items.push(jsonItem);
   }
 
-  // update cart.JSON
-  cart.JSON = cartJSON;
+  // update cart.items
+  cart.items = items;
 }
 document.querySelector("#addToCart").addEventListener("click", addToCart);
