@@ -100,30 +100,35 @@ const id = item.id;
 
 // fetch product by ID from API
 const product = await fetchProductById(id);
-
-// create product HTMLElement from JSON product
-const product_HTMLElement = product_JSONtoHTMLElement(product);
+console.log("fetchProductById", id, product);
 
 // set document title to product.name
 document.title = product.name;
 
+// create product HTMLElement from JSON product
+const product_HTMLElement = product_JSONtoHTMLElement(product);
 // get product_parentHTMLElement
 const product_parentHTMLElement = document.querySelector(".item");
 // insert product_HTMLElement into product_parentHTMLElement
+console.log("insert created product HTMLElement");
 product_parentHTMLElement.appendChild(product_HTMLElement);
+
+console.log("cart.items", cart.items);
 
 /*******************************/
 /***** #addToCart listener *****/
 /*******************************/
 function isSameItem(item1, item2) {
-  return (item1.id === item2.id) && (item1.color === item2.color);
+  return item1.id === item2.id && item1.color === item2.color;
 }
 
 function addToCart() {
   let jsonItem = item.JSON;
+  console.log("addToCart", "item.JSON", jsonItem);
 
   // do nothing if quantity or color are falsy
   if (!jsonItem.quantity || !jsonItem.color) {
+    console.error("addToCart", "nothing to add");
     return;
   }
 
@@ -134,8 +139,9 @@ function addToCart() {
   // loop through items until same item
   items.forEach((currentItem, index, thisArray) => {
     hasSameItem = isSameItem(currentItem, jsonItem);
-    // update quantity if is same item
     if (hasSameItem) {
+      // update quantity if is same item
+      console.log("addToCart", "update item quantity", "same item found at index", index, currentItem);
       currentItem.quantity += jsonItem.quantity;
       thisArray[index] = currentItem;
       return;
@@ -144,10 +150,12 @@ function addToCart() {
 
   if (!hasSameItem) {
     // same item not in cart, insert it
+    console.log('addToCart', "add item", "same item not in cart");
     items.push(jsonItem);
   }
 
   // update cart.items
+  console.log('addToCart', "update cart");
   cart.items = items;
 }
 document.querySelector("#addToCart").addEventListener("click", addToCart);

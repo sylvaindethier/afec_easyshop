@@ -28,11 +28,12 @@ function product_JSONtoHTMLElement(productJSON) {
 
 // fetch products from API
 const products = await fetchProducts();
+console.log('fetchProducts', products);
 
 // create products HTMLElement from JSON products
 const products_HTMLElement = products.map(product_JSONtoHTMLElement);
-
 // get products_parentHTMLElement
 const products_parentHTMLElement = document.querySelector("#items");
 // insert products_HTMLElement into products_parentHTMLElement
+console.log('insert created product HTMLElement[]');
 products_parentHTMLElement.append(...products_HTMLElement);
