@@ -53,7 +53,7 @@ export default class Cart {
   /**
    * Set _JSON
    * @private
-   * @param { JSON } value The JSON to set to _JSON value
+   * @param { JSON } value The JSON value to set to _JSON value
    */
   set _JSON(value) {
     this._storage = JSON.stringify(value);

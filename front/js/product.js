@@ -57,7 +57,7 @@ function product_JSONtoHTMLElement(productJSON) {
 class Item {
   // get the id from the URLSearchParams
   get id() {
-    return getURLSearchParam("id", window.location.href);
+    return getURLSearchParam("id", window.location.href).toString();
   }
 
   // get the quantity from the #itemQuantity
@@ -75,14 +75,29 @@ class Item {
     if (null === el) {
       return null;
     }
-    return el.value;
+    return el.value.toString();
   }
 
+  /**
+   * Set product
+   * @param { JSON } value The JSON value to set to product
+   */
+  set product(value) {
+    // ignore `_id`, `colors`
+    const { _id, colors, ...product } = value;
+    this._product = product;
+  }
+
+  /**
+   * Get the JSON
+   * @returns { JSON } The JSON value
+   */
   get JSON() {
     return {
       id: this.id,
       quantity: this.quantity,
       color: this.color,
+      ...this._product,
     };
   }
 }
@@ -101,6 +116,9 @@ const id = item.id;
 // fetch product by ID from API
 const product = await fetchProductById(id);
 console.log("fetchProductById", id, product);
+
+// set item product
+item.product = product;
 
 // set document title to product.name
 document.title = product.name;
@@ -124,7 +142,6 @@ function isSameItem(item1, item2) {
 
 function addToCart() {
   let jsonItem = item.JSON;
-  console.log("addToCart", "item.JSON", jsonItem);
 
   // do nothing if quantity or color are falsy
   if (!jsonItem.quantity || !jsonItem.color) {
@@ -141,7 +158,13 @@ function addToCart() {
     hasSameItem = isSameItem(currentItem, jsonItem);
     if (hasSameItem) {
       // update quantity if is same item
-      console.log("addToCart", "update item quantity", "same item found at index", index, currentItem);
+      console.log(
+        "addToCart",
+        "same item found",
+        "update item quantity",
+        index,
+        currentItem
+      );
       currentItem.quantity += jsonItem.quantity;
       thisArray[index] = currentItem;
       return;
@@ -150,12 +173,12 @@ function addToCart() {
 
   if (!hasSameItem) {
     // same item not in cart, insert it
-    console.log('addToCart', "add item", "same item not in cart");
+    console.log("addToCart", "same item not in cart", "add item");
     items.push(jsonItem);
   }
 
   // update cart.items
-  console.log('addToCart', "update cart");
   cart.items = items;
+  console.log("addToCart", "updated cart.items", cart.items);
 }
 document.querySelector("#addToCart").addEventListener("click", addToCart);
