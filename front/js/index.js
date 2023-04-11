@@ -3,7 +3,7 @@ import { toHTMLElement } from "./lib/toHTMLElement.js";
 
 /**
  * Convert JSON product to HTMLElement
- * @param { JSON } productJSON JSON product to convert to HTML string
+ * @param { JSON } productJSON JSON product to convert to HTMLElement
  * @returns { HTMLElement } The corresponding product HTMLElement
  */
 function product_JSONtoHTMLElement(productJSON) {
@@ -32,8 +32,6 @@ console.log('fetchProducts', products);
 
 // create products HTMLElement from JSON products
 const products_HTMLElement = products.map(product_JSONtoHTMLElement);
-// get products_parentHTMLElement
 const products_parentHTMLElement = document.querySelector("#items");
 // insert products_HTMLElement into products_parentHTMLElement
-console.log('insert created product HTMLElement[]');
 products_parentHTMLElement.append(...products_HTMLElement);

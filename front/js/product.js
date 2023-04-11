@@ -4,13 +4,13 @@ import { fetchProductById } from "./api.js";
 import Cart from "./Cart.class.js";
 
 /**
- * Convert JSON product to HTMLElement
- * @param { JSON } productJSON JSON product to convert to HTML string
- * @returns { HTMLElement } The corresponding product HTMLElement
+ * Convert JSON to item HTMLElement
+ * @param { JSON } json JSON to convert to item HTMLElement
+ * @returns { HTMLElement } The item HTMLElement
  */
-function product_JSONtoHTMLElement(productJSON) {
-  // get properties value
-  const { name, price, colors, description, imageUrl, altTxt } = productJSON;
+function item_JSONtoHTMLElement(json) {
+  // get product properties value
+  const { name, price, colors, description, imageUrl, altTxt } = json;
 
   const html = `
 <article>
@@ -54,131 +54,87 @@ function product_JSONtoHTMLElement(productJSON) {
   return toHTMLElement(html);
 }
 
-class Item {
-  // get the id from the URLSearchParams
-  get id() {
-    return getURLSearchParam("id", window.location.href).toString();
-  }
-
-  // get the quantity from the #itemQuantity
-  get quantity() {
-    const el = document.querySelector("#itemQuantity");
-    if (null === el) {
-      return null;
-    }
-    return parseInt(el.value);
-  }
-
-  // get the color from the #color-select
+class CartItemDOM {
+  // Get color from the #color-select
   get color() {
     const el = document.querySelector("#color-select");
-    if (null === el) {
-      return null;
-    }
-    return el.value.toString();
+    return null === el ? null : String(el.value);
   }
 
-  /**
-   * Set product
-   * @param { JSON } value The JSON value to set to product
-   */
-  set product(value) {
-    // ignore `_id`, `colors`
-    const { _id, colors, ...product } = value;
-    this._product = product;
+  // Get quantity from the #itemQuantity
+  get quantity() {
+    const el = document.querySelector("#itemQuantity");
+    return null === el ? null : parseInt(String(el.value));
   }
 
-  /**
-   * Get the JSON
-   * @returns { JSON } The JSON value
-   */
+  // get JSON
   get JSON() {
     return {
       id: this.id,
-      quantity: this.quantity,
       color: this.color,
-      ...this._product,
+      quantity: this.quantity,
     };
   }
 }
-
-// get new cart & item
-const cart = new Cart();
-const item = new Item();
 
 /********************************************/
 /***** insert product into the DOM *****/
 /********************************************/
 
-// get item id
-const id = item.id;
+// get the id from the URLSearchParams
+const id = getURLSearchParam("id", window.location.href);
 
 // fetch product by ID from API
 const product = await fetchProductById(id);
 console.log("fetchProductById", id, product);
 
-// set item product
-item.product = product;
-
 // set document title to product.name
 document.title = product.name;
 
-// create product HTMLElement from JSON product
-const product_HTMLElement = product_JSONtoHTMLElement(product);
-// get product_parentHTMLElement
-const product_parentHTMLElement = document.querySelector(".item");
-// insert product_HTMLElement into product_parentHTMLElement
-console.log("insert created product HTMLElement");
-product_parentHTMLElement.appendChild(product_HTMLElement);
+// create item HTMLElement from product
+const item_HTMLElement = item_JSONtoHTMLElement(product);
+const item_parentHTMLElement = document.querySelector(".item");
+// insert item_HTMLElement into item_parentHTMLElement
+item_parentHTMLElement.appendChild(item_HTMLElement);
+
+// get cart & item
+const cart = new Cart();
+const item = new CartItemDOM();
+item.id = id;
 
 console.log("cart.items", cart.items);
 
 /*******************************/
 /***** #addToCart listener *****/
 /*******************************/
-function isSameItem(item1, item2) {
-  return item1.id === item2.id && item1.color === item2.color;
-}
-
 function addToCart() {
-  let jsonItem = item.JSON;
+  const jsonItem = item.JSON;
+  const { color, quantity } = jsonItem;
 
   // do nothing if quantity or color are falsy
-  if (!jsonItem.quantity || !jsonItem.color) {
+  if (!quantity || !color) {
     console.error("addToCart", "nothing to add");
     return;
   }
 
-  // get cart.items
-  let items = cart.items;
-  let hasSameItem = false;
-
-  // loop through items until same item
-  items.forEach((currentItem, index, thisArray) => {
-    hasSameItem = isSameItem(currentItem, jsonItem);
-    if (hasSameItem) {
-      // update quantity if is same item
-      console.log(
-        "addToCart",
-        "same item found",
-        "update item quantity",
-        index,
-        currentItem
-      );
-      currentItem.quantity += jsonItem.quantity;
-      thisArray[index] = currentItem;
-      return;
-    }
-  });
-
-  if (!hasSameItem) {
-    // same item not in cart, insert it
-    console.log("addToCart", "same item not in cart", "add item");
-    items.push(jsonItem);
+  // get cart item
+  const cartItem = cart.getItem(jsonItem);
+  if (cartItem != null) {
+    // item in cart, add quantity & update
+    console.log(
+      "addToCart",
+      "cart.getItem",
+      "cart.updateItemQuantity",
+      jsonItem
+    );
+    cartItem.quantity += quantity;
+    cart.updateItem(cartItem);
+  } else {
+    // item not in cart, insert it
+    console.log("addToCart", "!getItem", "cart.addItem", jsonItem);
+    cart.addItem(jsonItem);
   }
 
-  // update cart.items
-  cart.items = items;
   console.log("addToCart", "updated cart.items", cart.items);
 }
 document.querySelector("#addToCart").addEventListener("click", addToCart);
