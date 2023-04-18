@@ -168,9 +168,9 @@ function changeItemQuantity(ev) {
   console.log("changeItemQuantity", "updated cart.items", cart.items, "cart", cart);
 }
 
-/**********************************/
+/********************************/
 /***** .deleteItem listener *****/
-/**********************************/
+/********************************/
 function deleteItem(ev) {
   // get the HTMLElement that trigger the event
   const el = ev.target;

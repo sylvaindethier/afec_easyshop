@@ -104,9 +104,9 @@ const cart = new Cart();
 const item = new CartItemDOM({ id });
 // console.log("cart", cart, "item", item);
 
-/********************************************/
+/***************************************/
 /***** insert product into the DOM *****/
-/********************************************/
+/***************************************/
 
 // create item HTMLElement
 const item_HTMLElement = await item_toHTMLElement(item);
