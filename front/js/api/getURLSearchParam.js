@@ -5,7 +5,7 @@
  * @throws { Error } Whenever the name is missing from the URLSearchParams
  * @returns { String } The value of the URLSearchParams
  */
-export function getURLSearchParam(name, url = window.location.href) {
+export default function getURLSearchParam(name, url = window.location.href) {
   // url hast to be an instance of URL
   if (!(url instanceof URL)) {
     url = new URL(url);
