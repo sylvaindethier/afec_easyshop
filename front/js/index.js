@@ -1,17 +1,32 @@
-import { fetchProducts } from "./api.js";
-import { toHTMLElement } from "./lib/toHTMLElement.js";
+import fetchProducts from "./api/fetchProducts.js";
+import { buildIdURL } from "./api/config.js";
+import toHTMLElement from "./lib/toHTMLElement.js";
 
 /**
- * Convert JSON product to HTMLElement
- * @param { JSON } productJSON JSON product to convert to HTMLElement
- * @returns { HTMLElement } The corresponding product HTMLElement
+ * Convert JSON to item HTMLElement
+ * @param { JSON } json JSON to convert to item HTMLElement
+ * @returns { HTMLElement } The item HTMLElement
  */
-function product_JSONtoHTMLElement(productJSON) {
+function item_JSONtoHTMLElement(json) {
   // get properties value
-  const { _id, name, description, imageUrl, altTxt } = productJSON;
+  const {
+    // id,
+    _id,
+    name,
+    // color,
+    colors,
+    // quantity,
+    price,
+    description,
+    imageUrl,
+    altTxt,
+  } = json;
+
+  // get item properties value
+  // const { _id, name, description, imageUrl, altTxt } = json;
 
   const html = `
-<a href="./product.html?id=${_id}">
+<a href="./product.html${buildIdURL(_id)}">
   <article>
     <img src="${imageUrl}" alt="${altTxt}">
     <h3 class="productName">${name}</h3>
@@ -30,8 +45,8 @@ function product_JSONtoHTMLElement(productJSON) {
 const products = await fetchProducts();
 console.log('fetchProducts', products);
 
-// create products HTMLElement from JSON products
-const products_HTMLElement = products.map(product_JSONtoHTMLElement);
-const products_parentHTMLElement = document.querySelector("#items");
-// insert products_HTMLElement into products_parentHTMLElement
-products_parentHTMLElement.append(...products_HTMLElement);
+// create items HTMLElement from products
+const items_HTMLElement = products.map(item_JSONtoHTMLElement);
+const items_parentHTMLElement = document.querySelector("#items");
+// insert products_HTMLElement into items_parentHTMLElement
+items_parentHTMLElement.append(...items_HTMLElement);
