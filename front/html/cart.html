@@ -63,9 +63,9 @@
 
             <template id="template-cart__item">
               <!--\\\\\\\\\\ CART item //////////-->
-              <article class="cart__item" data-id="{product-ID}" data-color="{product-color}">
+              <article class="cart__item" data-id="${product-id}" data-color="${product-color}">
                 <div class="cart__item__img">
-                  <img src="../images/product01.jpg" alt="Photographie d'un canapé">
+                  <img _src="${product-image}" alt="Photographie d'un canapé">
                 </div>
                 <div class="cart__item__content">
                   <div class="cart__item__content__description">
@@ -102,7 +102,7 @@
               <div class="cart__order__form__question">
                 <label for="firstName">Prénom: </label>
                 <input type="text" name="firstName" id="firstName" required>
-                <p id="firstNameErrorMsg">ceci est un message d'erreur</p>
+                <p id="firstNameErrorMsg"></p>
               </div>
               <div class="cart__order__form__question">
                 <label for="lastName">Nom: </label>

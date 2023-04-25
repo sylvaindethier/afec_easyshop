@@ -1,18 +1,27 @@
-import { productsURL } from "./config.js";
-import fetchApi from "./fetchApi.js";
+import { PRODUCTS_URL } from "./config.js";
+import fetchURL from "./fetchURL.js";
+
+/**
+ * @typedef {import('./Product.type.js').Product} Product
+ */
 
 /**
  * Fetch all products from API
- * @throws { Error } Whenever an error occurs while fetching products
- * @returns { Promise<JSON[], Error> } Promise which resolve to an Array of all JSON products or reject the response Error
+ * @throws {Error} Whenever an error occurs while fetching products
+ * @returns {Promise<Product[]>} Promise which resolve to an Array of all Product
  */
 export default function fetchProducts() {
+  // define Error handlers
   const onResponseError = (response) => {
-    throw new Error("Response Error while fetching products", response);
+    const message = "Response Error while fetching products";
+    console.error("@fetchProducts", message, response);
+    throw new Error(message);
   };
   const onError = (error) => {
-    console.error("Error while fetching products", error);
+    const message = "Error while fetching products";
+    console.error("@fetchProducts", message, error);
+    throw new Error(message);
   };
 
-  return fetchApi(productsURL, { onResponseError, onError });
+  return fetchURL(PRODUCTS_URL, { onResponseError, onError });
 }

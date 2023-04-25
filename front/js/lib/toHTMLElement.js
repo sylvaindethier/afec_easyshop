@@ -6,8 +6,10 @@
 export default function toHTMLElement(html) {
   // create an empty template
   const template = document.createElement("template");
+
   // populate w/ the html string, trim to avoid empty space
   template.innerHTML = html.trim();
+
   // return its content as Node from firstChild
   return template.content.firstChild;
 }

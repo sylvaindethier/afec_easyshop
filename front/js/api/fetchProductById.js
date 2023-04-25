@@ -1,19 +1,28 @@
-import { productURL } from "./config.js";
-import fetchApi from "./fetchApi.js";
+import { productByIdURL } from "./config.js";
+import fetchURL from "./fetchURL.js";
 
 /**
- * Fetch a product by ID from API
- * @param { String } id The product ID to fetch from the API
- * @throws { Error } Whenever an error occurs while fetching a product by its ID
- * @returns { Promise<JSON, Error> } Promise which resolve to JSON product or reject the response Error
+ * @typedef {import('./types/Product.type.js').Product} Product
+ */
+
+/**
+ * Fetch a product by its id from API
+ * @param {Product._id} id The product id to fetch from the API
+ * @throws {Error} Whenever an error occurs while fetching a product by its id
+ * @returns {Promise<Product>} Promise which resolve to the Product
  */
 export default function fetchProductById(id) {
+  // define Error handlers
   const onResponseError = (response) => {
-    throw new Error("Response Error while fetching product by ID", response);
+    const message = `Response Error while fetching product by 'id' "${id}"`;
+    console.error("@fetchProductById", message, response);
+    throw new Error(message);
   };
   const onError = (error) => {
-    console.error("Error while fetching product by ID", error);
+    const message = `Error while fetching product by 'id' "${id}"`;
+    console.error("@fetchProductById", message, error);
+    throw new Error(message);
   };
 
-  return fetchApi(productURL(id), { onResponseError, onError });
+  return fetchURL(productByIdURL(id), { onResponseError, onError });
 }
