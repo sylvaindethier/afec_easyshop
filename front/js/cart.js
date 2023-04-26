@@ -343,6 +343,9 @@ function submitOrder(ev) {
   fetchOrder(order)
     .then((orderResponse) => {
       console.log("@cart submitOrder", "fetchOrder response", orderResponse);
+      // store order response in storage to be able to retrieve information on the next page
+      window.localStorage.setItem("contact", JSON.stringify(contact));
+
       const { orderId } = orderResponse;
       // redirect to confirmation.html with the orderId
       window.location.href = `confirmation.html${buildIdURL(orderId)}`;
